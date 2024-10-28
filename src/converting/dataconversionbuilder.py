@@ -1,16 +1,17 @@
 from collections.abc import Iterable
-from src.converting.buildblock import BuildBlock
+from src.converting.setblock import SetBlock
 from src.converting.conversionblock import ConversionBlock
 from src.converting.dataconverter import DataConverter
 from src.converting.datasetter import DataSetter
 from src.converting.locationsdictionary import LocationsDictionary
-
+from src.converting.workbookdictionary import WorkbookDictionary
+from src.intervalutil import indices_range
 
 class DataConversionBuilder:
     def __init__(self):
         self.locations_dictionary = LocationsDictionary()
         self.conversion_blocks = []
-        self.build_blocks = []
+        self.setblocks = []
 
     def location(self, name, location):
         self.locations_dictionary.add_location(name, location)
@@ -47,14 +48,19 @@ class DataConversionBuilder:
 
         return self
 
-    def set(self, destination_name, data_generator):
+    def set_data_generator(self, destination_name, data_generator):
         destination = self._get_location(destination_name)
-        self._add_build_block(destination, data_generator)
+        self._add_setblock(destination, data_generator)
         return self
+        
 
     def execute(self):
-        DataConverter().multiple_convert(self.conversion_blocks).save()
-        DataSetter().multiple_set(self.build_blocks).save()
+        workbook_dictionary = WorkbookDictionary()
+
+        DataConverter(workbook_dictionary).multiple_convert(self.conversion_blocks)
+        DataSetter(workbook_dictionary).multiple_set(self.setblocks)
+
+        workbook_dictionary.save()
 
     def _get_location(self, name):
         return self.locations_dictionary.get_location(name)
@@ -65,5 +71,5 @@ class DataConversionBuilder:
     def _add_conversion_block(self, sources, destination, convert_method):
         self.conversion_blocks.append(ConversionBlock(sources, destination, convert_method))
 
-    def _add_build_block(self, destination, data_generator):
-        self.build_blocks.append(BuildBlock(destination, data_generator))
+    def _add_setblock(self, destination, data_generator):
+        self.setblocks.append(SetBlock(destination, data_generator))

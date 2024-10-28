@@ -1,11 +1,11 @@
 from src.converting.conversionblock import ConversionBlock
 from src.converting.datalocation import DataLocation
 from src.excelworkbook import ExcelWorkbook
-
+from src.converting.workbookdictionary import WorkbookDictionary
 
 class DataConverter:
-    def __init__(self):
-        self.workbooks = {}
+    def __init__(self, workbooks_dictionary: WorkbookDictionary):
+        self.workbooks_dictionary = workbooks_dictionary
 
         self.sources: list[DataLocation] = None
         self.destination: DataLocation = None
@@ -17,7 +17,7 @@ class DataConverter:
     def get_data_gen(self):
         for location in self.sources:
             path = location.path
-            workbook = self.workbooks[path]
+            workbook = self.workbooks_dictionary[path]
             workbook.set_active_sheet(location.sheet_name)
             data = workbook.get(location.string_range)     
 
@@ -52,18 +52,12 @@ class DataConverter:
 
         workbook = self.get_workbook(self.destination.path)
         workbook.set(output, self.destination.string_range, sheet_name=self.destination.sheet_name)
-        
-        self.reset()
     
     def multiple_convert(self, conversion_blocks):
         for conversion_block in conversion_blocks:
             self.single_convert(conversion_block)
 
         return self
-
-    def save(self):
-        for workbook in self.workbooks.values():
-            workbook.save()
 
     def get_output_gen(self):
         for i in range(self.size):
@@ -79,7 +73,7 @@ class DataConverter:
         return list(self.get_output_gen())
 
     def get_workbook(self, path):
-        return self.workbooks[path]
+        return self.workbooks_dictionary[path]
 
     def update_attributes(self, conversion_block: ConversionBlock):
         self.sources = conversion_block.sources
@@ -89,12 +83,4 @@ class DataConverter:
     def update_workbooks(self):
         paths = [location.path for location in self.sources + [self.destination]]
         paths = list(set(paths))
-        self.workbooks = {path: ExcelWorkbook(path) for path in paths}
-
-    def reset(self):
-        self.sources = None
-        self.destination = None
-        self.convert_method = None
-
-        self.data = None
-        self.size = None
+        self.workbooks_dictionary.extend(paths)

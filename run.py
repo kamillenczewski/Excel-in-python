@@ -1,5 +1,7 @@
 from ensureaccesstofiles import ensure_access_to_files
 from src.converting.dataconversionbuilder import DataConversionBuilder
+from src.intervalutil import split_excel_index
+from src.polishnamesgenerator import generate_full_name
 
 ensure_access_to_files()
 
@@ -19,4 +21,12 @@ def main():
         .execute()
     )
 
-main()
+def main1():
+    (DataConversionBuilder()
+        .global_path('inicjaly nowe.xlsx')
+        .string_range('a', 'A1:[V]')
+        .set_data_generator('a', (generate_full_name() for _ in range(100)))
+        .execute()
+    )
+
+main1()
