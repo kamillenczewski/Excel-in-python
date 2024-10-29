@@ -1,4 +1,4 @@
-from src.polishnames import MALES_FIRST_NAMES, MALE_LAST_NAMES, FEMALE_FIRST_NAMES, FEMALE_LAST_NAMES
+from polishnames import MALES_FIRST_NAMES, MALE_LAST_NAMES, FEMALE_FIRST_NAMES, FEMALE_LAST_NAMES
 from random import choice, choices
 
 def generate_first_name():

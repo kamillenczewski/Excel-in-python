@@ -1,7 +1,6 @@
 from collections.abc import Iterable
-from src.converting.setblock import SetBlock
-from src.converting.workbookdictionary import WorkbookDictionary
-from src.intervalutil import indices_range
+from setblock import SetBlock
+from workbookdictionary import WorkbookDictionary
 
 class DataSetter:
     def __init__(self, workbooks_dictionary):

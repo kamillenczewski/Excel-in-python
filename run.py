@@ -1,16 +1,12 @@
 from ensureaccesstofiles import ensure_access_to_files
-from src.converting.dataconversionbuilder import DataConversionBuilder
-from src.intervalutil import split_excel_index
-from src.polishnamesgenerator import generate_full_name
+from dataconversionbuilder import DataConversionBuilder
+from polishnamesgenerator import generate_full_name
+from empty import Empty
 
 ensure_access_to_files()
 
-# TO DO:
-# every string range should be converted to indices_range
-# because it will be look better and removes weird args possibilities
-
 def main():
-    (DataConversionBuilder()
+    Empty(DataConversionBuilder()
         .string_range('a', 'A2:[V]')
         .string_range('b', 'B2:[V]')
         .string_range('c', 'C2:[V]')
@@ -19,14 +15,12 @@ def main():
         .path('d', 'inicjaly nowe.xlsx')
         .convert(('a', 'b', 'c'), 'd', lambda a, b, c: a + b + ' [' + c + ']')
         .execute()
-    )
+        .save())
 
 def main1():
-    (DataConversionBuilder()
+    Empty(DataConversionBuilder()
         .global_path('inicjaly nowe.xlsx')
         .string_range('a', 'A1:[V]')
         .set_data_generator('a', (generate_full_name() for _ in range(100)))
         .execute()
-    )
-
-main1()
+        .save())

@@ -1,4 +1,4 @@
-from src.converting.datalocation import DataLocation
+from datalocation import DataLocation
 
 class SetBlock:
     def __init__(self, destination: DataLocation, data_generator):

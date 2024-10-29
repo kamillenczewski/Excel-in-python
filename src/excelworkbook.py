@@ -1,7 +1,7 @@
 from openpyxl import load_workbook, Workbook
 from os.path import isfile as file_exists
 
-from src.intervalutil import indices_range, limited_generator
+from intervalutil import indices_range, limited_generator
 
 class ExcelWorkbook:
     def __init__(self, path=None):

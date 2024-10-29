@@ -1,17 +1,17 @@
 from collections.abc import Iterable
-from src.converting.setblock import SetBlock
-from src.converting.conversionblock import ConversionBlock
-from src.converting.dataconverter import DataConverter
-from src.converting.datasetter import DataSetter
-from src.converting.locationsdictionary import LocationsDictionary
-from src.converting.workbookdictionary import WorkbookDictionary
-from src.intervalutil import indices_range
+from setblock import SetBlock
+from conversionblock import ConversionBlock
+from dataconverter import DataConverter
+from datasetter import DataSetter
+from locationsdictionary import LocationsDictionary
+from workbookdictionary import WorkbookDictionary
 
 class DataConversionBuilder:
     def __init__(self):
         self.locations_dictionary = LocationsDictionary()
         self.conversion_blocks = []
         self.setblocks = []
+        self.workbook_dictionary = WorkbookDictionary()
 
     def location(self, name, location):
         self.locations_dictionary.add_location(name, location)
@@ -52,15 +52,15 @@ class DataConversionBuilder:
         destination = self._get_location(destination_name)
         self._add_setblock(destination, data_generator)
         return self
-        
 
     def execute(self):
-        workbook_dictionary = WorkbookDictionary()
+        DataConverter(self.workbook_dictionary).multiple_convert(self.conversion_blocks)
+        DataSetter(self.workbook_dictionary).multiple_set(self.setblocks)
+        
+        return self
 
-        DataConverter(workbook_dictionary).multiple_convert(self.conversion_blocks)
-        DataSetter(workbook_dictionary).multiple_set(self.setblocks)
-
-        workbook_dictionary.save()
+    def save(self):
+        self.workbook_dictionary.save()
 
     def _get_location(self, name):
         return self.locations_dictionary.get_location(name)

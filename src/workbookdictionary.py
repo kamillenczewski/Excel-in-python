@@ -1,4 +1,4 @@
-from src.excelworkbook import ExcelWorkbook
+from excelworkbook import ExcelWorkbook
 
 class WorkbookDictionary:
     def __init__(self):

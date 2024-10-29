@@ -1,7 +1,7 @@
-from src.converting.conversionblock import ConversionBlock
-from src.converting.datalocation import DataLocation
-from src.excelworkbook import ExcelWorkbook
-from src.converting.workbookdictionary import WorkbookDictionary
+from conversionblock import ConversionBlock
+from datalocation import DataLocation
+from excelworkbook import ExcelWorkbook
+from workbookdictionary import WorkbookDictionary
 
 class DataConverter:
     def __init__(self, workbooks_dictionary: WorkbookDictionary):
