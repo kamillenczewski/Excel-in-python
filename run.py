@@ -1,9 +1,10 @@
 from ensureaccesstofiles import ensure_access_to_files
+
+ensure_access_to_files()
+
 from dataconversionbuilder import DataConversionBuilder
 from polishnamesgenerator import generate_full_name
 from empty import Empty
-
-ensure_access_to_files()
 
 def main():
     Empty(DataConversionBuilder()
@@ -24,3 +25,5 @@ def main1():
         .set_data_generator('a', (generate_full_name() for _ in range(100)))
         .execute()
         .save())
+    
+main1()

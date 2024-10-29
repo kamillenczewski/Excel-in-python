@@ -53,13 +53,11 @@ class ExcelWorkbook:
         
         values_length = len(values)
 
-        if string_range == None and indices_gen != None:
-            indices = list(limited_generator(indices_gen, values_length))
-
         if string_range != None:
             indices_gen = indices_range(string_range)
-            limited_gen = (index for _, index in zip(range(values_length), indices_gen))
-            indices = list(limited_gen)
+        
+        limited_gen = limited_generator(indices_gen, values_length)
+        indices = list(limited_gen)
 
         for index, value in zip(indices, values):
             sheet[index] = value
