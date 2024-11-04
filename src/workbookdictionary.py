@@ -1,8 +1,8 @@
-from excelworkbook import ExcelWorkbook
+from src.excelworkbook import ExcelWorkbook
 
 class WorkbookDictionary:
-    def __init__(self):
-        self.paths_and_workbooks: dict[str, ExcelWorkbook] = {}
+    def __init__(self, paths_and_workbooks: dict[str, ExcelWorkbook]):
+        self.paths_and_workbooks = paths_and_workbooks
 
     def add(self, path):
         if path not in self.paths_and_workbooks:
@@ -19,6 +19,9 @@ class WorkbookDictionary:
             
         return self.paths_and_workbooks[path]
     
+    def __contains__(self, item):
+        return item in self.paths_and_workbooks
+
     def values(self):
         return self.paths_and_workbooks.values()
     

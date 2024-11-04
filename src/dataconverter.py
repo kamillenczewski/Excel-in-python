@@ -1,86 +1,56 @@
-from conversionblock import ConversionBlock
-from datalocation import DataLocation
-from excelworkbook import ExcelWorkbook
-from workbookdictionary import WorkbookDictionary
+from src.conversionblock import ConversionBlock
+from src.argumentgetter import ArgumentsGetter
+from src.argumenttypes import ArgumentTypes
+from src.datasets import DataSets
+from src.argumentconvertersdata import ArgumentConvertersData
+from src.argumentsconverter import ArgumentsConverter
+from src.datamanager import DataManager
+
 
 class DataConverter:
-    def __init__(self, workbooks_dictionary: WorkbookDictionary):
-        self.workbooks_dictionary = workbooks_dictionary
+    def __init__(self, data_manager: DataManager):
+        self.data_manager = data_manager
 
-        self.sources: list[DataLocation] = None
-        self.destination: DataLocation = None
+        self.source_names = None
+        self.destination_name = None
         self.convert_method = None
 
-        self.data = None
+        self.argument_types_data = None
+        self.argument_converters_data = None 
+
+        self.datasets = None
         self.size = None
 
-    def get_data_gen(self):
-        for location in self.sources:
-            path = location.path
-            workbook = self.workbooks_dictionary[path]
-            workbook.set_active_sheet(location.sheet_name)
-            data = workbook.get(location.string_range)     
-
-            yield list(data)
-
-    def update_data(self):
-        self.data = list(self.get_data_gen())
-
-    def all_data_sets_have_same_size(self, data, size):
-        for data_set in data:
-            if len(data_set) != size:
-                return False
+    def single_convert(self, conversion_block: ConversionBlock, argument_types_data: ArgumentTypes, argument_converters_data: ArgumentConvertersData):
+        self.source_names = conversion_block.source_names
+        self.destination_name = conversion_block.destination_name
+        self.convert_method = conversion_block.convert_method
         
-        return True
+        self.argument_types_data = argument_types_data
+        self.argument_converters_data = argument_converters_data
 
-    def update_size_of_data_set(self):
-        size = len(self.data[0])
-
-        if not self.all_data_sets_have_same_size(self.data, size):
-            raise ValueError('All data sets should have the same size!')
-        
-        self.size = size
-
-    def single_convert(self, conversion_block: ConversionBlock):
-        self.update_attributes(conversion_block)
-        self.update_workbooks()
-
-        self.update_data()
-        self.update_size_of_data_set()
+        self.datasets = self.get_datasets()
+        self.size = self.datasets.get_dataset_size()
 
         output = self.get_output()
 
-        workbook = self.get_workbook(self.destination.path)
-        workbook.set(output, self.destination.string_range, sheet_name=self.destination.sheet_name)
+        self.data_manager.set_values(output, self.destination_name)
+
+    def get_datasets(self):
+        return DataSets(self.source_names, self.get_datasets_gen())
     
-    def multiple_convert(self, conversion_blocks):
-        for conversion_block in conversion_blocks:
-            self.single_convert(conversion_block)
-
-        return self
-
-    def get_output_gen(self):
-        for i in range(self.size):
-            args = list(self.get_args(i)) 
-            result = self.convert_method(*args)
-            yield result
-
-    def get_args(self, number_index):
-        for list_ in self.data:
-            yield list_[number_index]
+    def get_datasets_gen(self):
+        for name in self.source_names:
+            yield list(self.data_manager.get_values(name))
 
     def get_output(self):
         return list(self.get_output_gen())
 
-    def get_workbook(self, path):
-        return self.workbooks_dictionary[path]
+    def get_output_gen(self):
+        for args_set in self.get_args_sets():
+            yield self.convert_method(*args_set)
 
-    def update_attributes(self, conversion_block: ConversionBlock):
-        self.sources = conversion_block.sources
-        self.destination = conversion_block.destination
-        self.convert_method = conversion_block.convert_method
-
-    def update_workbooks(self):
-        paths = [location.path for location in self.sources + [self.destination]]
-        paths = list(set(paths))
-        self.workbooks_dictionary.extend(paths)
+    def get_args_sets(self):
+        args_sets = ArgumentsGetter(self.datasets).get(self.source_names, self.argument_types_data)
+        args_sets = ArgumentsConverter(args_sets).convert(self.source_names, self.argument_converters_data)
+        return args_sets

@@ -13,7 +13,7 @@ def ensure_access_to_files():
     path.insert(0, path_to_venv)
     path.insert(0, path_to_src)
 
-    src_dirs = find_all_dirs(path_to_src)
+    # src_dirs = find_all_dirs(path_to_src)
 
-    for dir in src_dirs:
-        path.insert(0, dir)
+    # for dir in src_dirs:
+    #     path.insert(0, dir)

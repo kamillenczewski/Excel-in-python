@@ -1,4 +1,4 @@
-from lettersrange import letters_range
+from src.lettersrange import letters_range
 
 def split_excel_index(index: str):
     for i in range(len(index) - 1):

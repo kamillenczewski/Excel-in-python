@@ -38,7 +38,6 @@ def letters_range(start_letter_string, end_letter_string=None):
     end_indices = letter_string_to_letter_indices(end_letter_string)
 
     while not are_lists_equal(current_indices, end_indices):
-        print(current_indices)
         yield letter_indices_to_letter_string(current_indices)
         increase_indices_list(current_indices)
 
